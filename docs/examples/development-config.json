@@ -1,0 +1,36 @@
+{
+  "roi": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      1.0,
+      0.0
+    ],
+    [
+      1.0,
+      1.0
+    ],
+    [
+      0.0,
+      1.0
+    ]
+  ],
+  "line": [
+    [
+      0.2,
+      0.83
+    ],
+    [
+      0.8,
+      0.83
+    ]
+  ],
+  "deadband": 0.005,
+  "min_confirmations": 2,
+  "track_thresh": 0.5,
+  "track_buffer": 30,
+  "match_thresh": 0.8,
+  "fps_override": null
+}

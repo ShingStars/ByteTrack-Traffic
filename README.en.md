@@ -120,7 +120,7 @@ python -m pytest tests -q
 
 Latest verification: 2026-10-18, Windows, Python 3.12, PyTorch 2.5.1 + cu121, RTX 3070 Laptop 8GB, all 88 tests passed. Distribution: core 40, video 6, eval 14, API 18, processor 10. One Starlette/AnyIO deprecation warning, no functional test failure.
 
-A Linux CI Ubuntu CPU workflow is present, but execution has not yet been verified by actual GitHub results.
+Linux CI passed: [run](https://github.com/ShingStars/ByteTrack-Traffic/actions/runs/39106005266) (commit 6711528).
 
 ## Real GPU Web Job
 

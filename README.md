@@ -4,6 +4,10 @@
 
 项目目标不是训练新模型，而是把 ByteTrack 的多目标跟踪能力落到可复现的道路视频分析流程中：上传视频、绘制 ROI 与计数线、运行 A/B/C 三种处理模式、查看跟踪与计数结果、导出 CSV/JSON，并支持人工复核。
 
+![桌面端对比视图](docs/images/comparison-desktop.png)
+
+道路视频素材：Editor，CC BY 3.0，[Commons 来源](https://commons.wikimedia.org/wiki/File:Traffic_on_bridge_at_night.webm)，已做 UI 与标注改动。
+
 ## 适用场景
 
 - 固定机位道路视频的离线分析
@@ -120,7 +124,7 @@ python -m pytest tests -q
 
 最近一次验证：2026-10-18，Windows、Python 3.12、PyTorch 2.5.1 + cu121、RTX 3070 Laptop 8GB，88 项测试全部通过。测试分布：核心 40、视频 6、评估 14、API 18、处理器 10。存在一条 Starlette/AnyIO 弃用警告，不影响功能测试。
 
-Linux CI 已提供 Ubuntu CPU 工作流，但执行结果尚未在 GitHub 实际运行中验证。
+Linux CI 已通过：[运行记录](https://github.com/ShingStars/ByteTrack-Traffic/actions/runs/39106005266)（提交 6711528）。
 
 ## 真实 GPU Web 任务记录
 
