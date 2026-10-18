@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ByteTrack-Traffic · 实验对比</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="topheader">
+  <div class="brand">
+    <span class="brand-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="6" cy="18" r="2"/><circle cx="18" cy="6" r="2"/>
+        <path d="M8 18h6a4 4 0 0 0 4-4V8"/>
+      </svg>
+    </span>
+    <strong class="brand-name">ByteTrack-Traffic</strong>
+    <span class="brand-divider" aria-hidden="true"></span>
+    <span class="brand-sub">车辆跟踪 · 双向计数</span>
+  </div>
+  <nav class="tabs" aria-label="主导航">
+    <button type="button" class="tab is-active" id="tab-compare" data-tab="compare" aria-selected="true">实验对比</button>
+    <button type="button" class="tab" id="tab-review" data-tab="review" aria-selected="false">事件复核</button>
+  </nav>
+  <div class="topheader-actions">
+    <button type="button" class="btn btn-ghost" id="btn-new-experiment">新实验</button>
+  </div>
+</header>
+
+<div class="app">
+  <aside class="sidebar" aria-label="实验配置">
+    <h2 class="sidebar-title">实验配置</h2>
+
+    <section class="side-section" aria-labelledby="sec-upload">
+      <h2 id="sec-upload">1 上传道路视频</h2>
+      <label class="drop-target" id="drop-target" for="file-input">
+        <input type="file" id="file-input" accept="video/*" hidden>
+        <span class="drop-title">点击或拖拽视频到此处</span>
+        <span class="drop-note">最大 512MB · 时长不超过 300 秒</span>
+      </label>
+      <div class="field">
+        <label for="fps-override">FPS 覆盖（可选）</label>
+        <input type="number" id="fps-override" min="1" max="240" step="0.01" placeholder="留空使用视频原始帧率">
+      </div>
+      <div class="field">
+        <label for="video-select">已上传视频</label>
+        <select id="video-select"><option value="">加载中…</option></select>
+      </div>
+      <dl class="video-meta" id="video-meta" hidden>
+        <div><dt>文件名</dt><dd id="meta-filename">—</dd></div>
+        <div><dt>分辨率</dt><dd id="meta-size">—</dd></div>
+        <div><dt>帧率</dt><dd id="meta-fps">—</dd></div>
+        <div><dt>总帧数</dt><dd id="meta-frames">—</dd></div>
+        <div><dt>时长</dt><dd id="meta-duration">—</dd></div>
+      </dl>
+    </section>
+
+    <section class="side-section" aria-labelledby="sec-roi">
+      <h2 id="sec-roi">2 设置计数区域</h2>
+      <div class="btn-row">
+        <button type="button" class="btn btn-ghost" id="btn-draw-roi">绘制 ROI</button>
+        <button type="button" class="btn btn-ghost" id="btn-draw-line">绘制计数线</button>
+        <button type="button" class="btn btn-ghost" id="btn-reset-geo">重置</button>
+      </div>
+      <p class="helper">在画面中点击，双击完成 ROI；计数线点击两点。</p>
+      <ul class="chips" id="class-chips" aria-label="类别">
+        <li class="chip">car</li><li class="chip">bus</li><li class="chip">truck</li><li class="chip">motorcycle</li><li class="chip">bicycle</li>
+      </ul>
+      <p class="geo-status" id="geo-status">ROI：全画面 · 计数线：默认</p>
+    </section>
+
+    <section class="side-section" aria-labelledby="sec-run">
+      <h2 id="sec-run">3 运行实验</h2>
+      <button type="button" class="btn btn-primary" id="btn-run" disabled>开始对比</button>
+      <button type="button" class="btn btn-ghost" id="btn-cancel" hidden>取消运行</button>
+      <div class="progress" id="progress-wrap" hidden>
+        <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress-bar"></div>
+      </div>
+      <p class="run-status" id="run-status" role="status" aria-live="polite">等待上传视频</p>
+      <div class="field">
+        <label for="job-select">历史任务</label>
+        <select id="job-select"><option value="">暂无任务</option></select>
+      </div>
+    </section>
+  </aside>
+
+  <main class="main">
+    <header class="page-head">
+      <div>
+        <h1>同一视频，验证每一次改进</h1>
+        <p class="subhead">共享检测结果 · 保持相同时间轴</p>
+      </div>
+      <div class="page-head-actions">
+        <label for="mode-select" class="sr-only">右侧模式</label>
+        <select id="mode-select" class="mode-select" aria-label="右侧模式">
+          <option value="C">C 改进版</option>
+          <option value="B">B 可切换</option>
+        </select>
+      </div>
+    </header>
+
+    <section class="compare" id="compare-view" aria-label="视频对比">
+      <article class="video-card" id="card-a">
+        <header class="card-head"><span class="tag tag-a">A</span><h2>A 基线</h2></header>
+        <div class="video-stage" id="stage-a">
+          <img id="frame-a" alt="A 基线首帧" hidden>
+          <canvas id="canvas-a" class="overlay" aria-label="A 基线 ROI 与计数线"></canvas>
+          <video id="video-a" class="player" playsinline muted hidden></video>
+          <div class="blank" id="blank-a">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M6 34l10-14 8 10 6-8 12 16z"/><circle cx="34" cy="12" r="4"/></svg>
+            <p>上传视频后，在这里查看结果</p>
+          </div>
+        </div>
+      </article>
+      <article class="video-card" id="card-c">
+        <header class="card-head"><span class="tag tag-c">C</span><h2 id="card-c-title">C 改进版</h2></header>
+        <div class="video-stage" id="stage-c">
+          <video id="video-c" class="player" playsinline muted hidden></video>
+          <div class="blank" id="blank-c">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M6 34l10-14 8 10 6-8 12 16z"/><circle cx="34" cy="12" r="4"/></svg>
+            <p>上传视频后，在这里查看结果</p>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="transport" id="transport" aria-label="播放控制">
+      <button type="button" class="icon-btn" id="btn-play" aria-label="播放" disabled>▶</button>
+      <button type="button" class="icon-btn" id="btn-prev" aria-label="上一帧" disabled>⏮</button>
+      <button type="button" class="icon-btn" id="btn-next" aria-label="下一帧" disabled>⏭</button>
+      <input type="range" id="timeline" min="0" max="1000" value="0" step="1" aria-label="时间轴" disabled>
+      <span class="frame-readout" id="frame-readout">0 / 0</span>
+      <label for="speed-select" class="sr-only">播放速度</label>
+      <select id="speed-select" aria-label="播放速度">
+        <option value="0.5">0.5x</option><option value="1" selected>1x</option><option value="2">2x</option>
+      </select>
+      <span class="sync" id="sync-indicator" aria-live="polite">未同步</span>
+    </section>
+
+    <section class="table-section" aria-labelledby="counts-title">
+      <div class="table-head">
+        <h2 id="counts-title">按类别核对计数</h2>
+        <p class="note">人工复核后显示误差</p>
+      </div>
+      <div class="table-scroll">
+        <table id="counts-table">
+          <thead>
+            <tr><th>类别</th><th>方向</th><th>A 基线</th><th>C 改进版</th><th>人工真值</th><th>状态</th></tr>
+          </thead>
+          <tbody id="counts-body">
+            <tr><td colspan="6" class="empty-row">暂无计数结果</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="exports" aria-label="导出">
+      <button type="button" class="btn btn-ghost" id="export-csv" disabled>CSV</button>
+      <button type="button" class="btn btn-ghost" id="export-report" disabled>JSON 报告</button>
+      <button type="button" class="btn btn-ghost" id="export-a" disabled>A 视频</button>
+      <button type="button" class="btn btn-ghost" id="export-c" disabled>C 视频</button>
+      <button type="button" class="btn btn-ghost" id="export-detections" disabled>检测缓存</button>
+    </section>
+  </main>
+</div>
+
+<section class="review-view" id="review-view" hidden aria-label="事件复核">
+  <header class="review-head">
+    <h1>事件复核</h1>
+    <p class="subhead">逐个记录清晰穿线事件；不确定事件不纳入评分。保存草稿不会标记已复核。</p>
+  </header>
+  <div class="review-grid">
+    <div class="review-player">
+      <video id="source-video" controls playsinline></video>
+      <div class="review-controls">
+        <button type="button" class="icon-btn" id="src-prev" aria-label="上一帧">⏮</button>
+        <button type="button" class="icon-btn" id="src-next" aria-label="下一帧">⏭</button>
+        <span class="frame-readout" id="src-frame">0 / 0</span>
+      </div>
+    </div>
+    <div class="review-form">
+      <h2>新增事件</h2>
+      <div class="field"><label for="truth-vehicle">车辆物理 ID</label><input type="text" id="truth-vehicle" autocomplete="off"></div>
+      <div class="field"><label for="truth-class">类别</label><select id="truth-class"></select></div>
+      <div class="field"><label for="truth-direction">方向</label><select id="truth-direction"><option value="A_to_B">A → B</option><option value="B_to_A">B → A</option></select></div>
+      <div class="field"><label for="truth-frame">帧号</label><input type="number" id="truth-frame" min="0" step="1"></div>
+      <label class="check"><input type="checkbox" id="truth-uncertain"> 不确定事件</label>
+      <button type="button" class="btn btn-primary" id="truth-add">添加事件</button>
+      <p class="form-error" id="truth-error" role="alert" hidden></p>
+    </div>
+  </div>
+  <div class="review-table-wrap">
+    <table id="truth-table">
+      <thead><tr><th>车辆 ID</th><th>类别</th><th>方向</th><th>帧号</th><th>不确定</th><th>操作</th></tr></thead>
+      <tbody id="truth-body"><tr><td colspan="6" class="empty-row">暂无事件</td></tr></tbody>
+    </table>
+  </div>
+  <div class="review-save">
+    <div class="field"><label for="reviewer-name">复核人</label><input type="text" id="reviewer-name" autocomplete="off"></div>
+    <label class="check"><input type="checkbox" id="reviewed-confirm"> 我已逐帧核对本视频全部清晰穿线事件</label>
+    <div class="btn-row">
+      <button type="button" class="btn btn-ghost" id="truth-draft">保存草稿</button>
+      <button type="button" class="btn btn-primary" id="truth-save">保存复核</button>
+    </div>
+    <p class="save-state" id="truth-state" role="status" aria-live="polite"></p>
+  </div>
+</section>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+<script type="module" src="/static/app.js"></script>
+</body>
+</html>

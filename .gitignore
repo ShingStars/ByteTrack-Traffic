@@ -139,3 +139,13 @@ docs/api
 events.out.tfevents*
 pretrained
 YOLOX_outputs
+
+# Traffic local artifacts
+data/local/
+results/
+outputs/
+weights/
+*.mp4
+*.webm
+work/
+.venv/

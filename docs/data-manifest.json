@@ -1,0 +1,43 @@
+{
+  "generated": "2026-10-18",
+  "timezone": "Asia/Shanghai",
+  "development_only": [
+    {
+      "id": "bridge-night",
+      "role": "development-only sample",
+      "page": "https://commons.wikimedia.org/wiki/File:Traffic_on_bridge_at_night.webm",
+      "original": "https://upload.wikimedia.org/wikipedia/commons/4/4d/Traffic_on_bridge_at_night.webm",
+      "author": "Editor",
+      "author_url": "https://www.youtube.com/user/Editor",
+      "source": "https://www.youtube.com/watch?v=sSfgai4YLIs",
+      "license": "CC BY 3.0",
+      "license_url": "https://creativecommons.org/licenses/by/3.0/",
+      "downloaded": "2026-10-18",
+      "derived": "first 10 seconds, transcoded to 30 fps H.264, no audio",
+      "notes": [
+        "Night fixed-bridge sample only.",
+        "Does not provide five-class coverage.",
+        "Not a held-out set.",
+        "Original WebM metadata avg fps 1000 is invalid versus vsr_fps 30, so the rate was normalized explicitly.",
+        "Video is not committed to the repository."
+      ]
+    }
+  ],
+  "rejected_candidates": [
+    {
+      "id": "saigon-moving-camera",
+      "page": "https://commons.wikimedia.org/wiki/File:Saigon_traffic-oVbn3HeLDA0.webm",
+      "author": "Karel Bilek",
+      "author_note": "own work",
+      "date": "2019-05-29",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "reason": "Camera is moving (bike foreground); not a fixed-camera evaluation source.",
+      "distribution": "Downloaded locally only; not distributed and not committed."
+    }
+  ],
+  "held_out": {
+    "collected": false,
+    "requirement": "At least 5 clear crossings per class for each of the five classes, from a source camera separate from development."
+  }
+}

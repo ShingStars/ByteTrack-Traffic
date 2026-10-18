@@ -1,0 +1,31 @@
+# Runtime dependencies for the traffic analytics package.
+#
+# PyTorch is intentionally NOT pinned here because the correct wheel depends on
+# the target platform (CPU vs CUDA). Install it first, then install this file.
+#
+# CPU (any platform):
+#   python -m pip install torch==2.5.1 torchvision==0.20.1 \
+#       --index-url https://download.pytorch.org/whl/cpu
+# CUDA 12.1 (Linux/Windows, NVIDIA GPU):
+#   python -m pip install torch==2.5.1 torchvision==0.20.1 \
+#       --index-url https://download.pytorch.org/whl/cu121
+#
+# Then:
+#   python -m pip install -r requirements-traffic.txt
+#
+# Python 3.10-3.12 are supported; 3.12 is the tested interpreter.
+
+numpy==1.26.4
+scipy==1.14.1
+lap==0.5.13
+opencv-python==4.11.0.86
+fastapi==0.115.12
+uvicorn==0.34.2
+python-multipart==0.0.20
+loguru==0.7.3
+tqdm
+tabulate
+ninja
+pillow
+psutil
+thop==0.1.1.post2209072238
